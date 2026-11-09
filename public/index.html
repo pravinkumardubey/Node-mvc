@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Test Client</title>
+    <!-- Use the script automatically served by our own socket.io server instead of a CDN -->
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .box { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        .log { background: #f4f4f4; padding: 10px; height: 200px; overflow-y: scroll; border: 1px solid #ddd; margin-top: 10px; font-family: monospace;}
+        input, button { padding: 8px; margin: 5px 0; }
+        h3 { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <h1>Socket.IO Test Client</h1>
+    
+    <div class="box">
+        <h3>Connection Status: <span id="status" style="color: red;">Disconnected</span></h3>
+        <p>Socket ID: <span id="socketId">-</span></p>
+    </div>
+
+    <div class="box">
+        <h3>1. Chat Room Test</h3>
+        <input type="text" id="roomId" placeholder="Enter Room ID (e.g. 'room1')" value="room1">
+        <button onclick="joinRoom()">Join Room</button>
+        <br><br>
+        <input type="text" id="senderName" placeholder="Your Name" value="UserA">
+        <input type="text" id="chatInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send Message</button>
+        
+        <div class="log" id="chatLog"></div>
+    </div>
+
+    <div class="box">
+        <h3>2. Live Notifications Test (User specific)</h3>
+        <input type="text" id="userId" placeholder="Enter User ID (e.g. '123')" value="123">
+        <button onclick="registerUser()">Register for Notifications</button>
+        
+        <div class="log" id="notificationLog"></div>
+    </div>
+
+    <script>
+        // Connect to the socket server
+        const socket = io({
+            transports: ['websocket', 'polling'] // Try both transports
+        }); 
+
+        const statusEl = document.getElementById('status');
+        const socketIdEl = document.getElementById('socketId');
+        const chatLog = document.getElementById('chatLog');
+        const notificationLog = document.getElementById('notificationLog');
+
+        socket.on("connect", () => {
+            statusEl.innerText = "Connected";
+            statusEl.style.color = "green";
+            socketIdEl.innerText = socket.id;
+            logTo(notificationLog, "Connected to server!");
+        });
+
+        socket.on("connect_error", (error) => {
+            statusEl.innerText = "Error: " + error.message;
+            console.error("Connection Error:", error);
+        });
+
+        socket.on("disconnect", (reason) => {
+            statusEl.innerText = "Disconnected (" + reason + ")";
+            statusEl.style.color = "red";
+            socketIdEl.innerText = "-";
+        });
+
+        // --- Chat Features ---
+        function joinRoom() {
+            const roomId = document.getElementById('roomId').value;
+            socket.emit('joinRoom', roomId);
+            logTo(chatLog, `Requested to join room: ${roomId}`);
+        }
+
+        function sendMessage() {
+            const roomId = document.getElementById('roomId').value;
+            const sender = document.getElementById('senderName').value;
+            const message = document.getElementById('chatInput').value;
+            
+            if (!message) return;
+
+            socket.emit('chatMessage', { roomId, message, sender });
+            logTo(chatLog, `You (${sender}): ${message}`);
+            document.getElementById('chatInput').value = ''; // clear input
+        }
+
+        socket.on("newMessage", (data) => {
+            logTo(chatLog, `${data.sender}: ${data.message}`);
+        });
+
+        socket.on("notification", (msg) => {
+            logTo(chatLog, `[Room Notification]: ${msg}`);
+        });
+
+
+        // --- Live Notifications Feature ---
+        function registerUser() {
+            const userId = document.getElementById('userId').value;
+            socket.emit('registerUser', userId);
+            logTo(notificationLog, `Registered to receive notifications for User ID: ${userId}`);
+        }
+
+
+        // Helper
+        function logTo(element, message) {
+            const div = document.createElement('div');
+            div.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
+            element.appendChild(div);
+            element.scrollTop = element.scrollHeight;
+        }
+    </script>
+</body>
+</html>

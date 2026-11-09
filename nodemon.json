@@ -1,0 +1,26 @@
+{
+  "watch": [
+    "app.js",
+    "routes/",
+    "controllers/",
+    "models/",
+    "middleware/",
+    "sockets/",
+    "config/",
+    "utils/",
+    "cron/",
+    "validators/"
+  ],
+  "ext": "js,json",
+  "ignore": [
+    "public/",
+    "uploads/",
+    "node_modules/",
+    "tests/",
+    "*.html",
+    "*.css",
+    "fix-indexes.js",
+    "test-room.js"
+  ],
+  "delay": 500
+}
