@@ -51,9 +51,11 @@
 <body>
     <div class="container">
         <div class="nav">
-            <a href="/profile.html">Profile</a>
-            <a href="/users.html">User Management</a>
-            <a href="/chat.html">Socket Test</a>
+            <a href="#" onclick="window.location.href=appUrl('index.html'); return false;">Chat</a>
+            <a href="#" onclick="window.location.href=appUrl('dm.html'); return false;">Direct Messages</a>
+            <a href="#" onclick="window.location.href=appUrl('profile.html'); return false;">Profile</a>
+            <a href="#" onclick="window.location.href=appUrl('users.html'); return false;">Users</a>
+            <a href="#" onclick="window.location.href=appUrl('login.html'); return false;">Login</a>
             <a href="#" onclick="logout()" style="color: #ef4444;">Logout</a>
         </div>
         </div>
@@ -161,7 +163,8 @@
         function logout() {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userRole');
-            window.location.href = '/login.html';
+            // window.location.href = '/login.html';
+            window.location.href = appUrl('login.html');
         }
 
         // --- Fetch Users ---
