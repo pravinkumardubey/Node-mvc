@@ -1,5 +1,6 @@
 const express = require("express");
 const http = require("http");
+const path = require("path");
 require("dotenv").config();
 const socketConfig = require("./config/socket");
 
@@ -29,11 +30,14 @@ app.use("/email", emailRoutes);
 app.use("/users", userRoutes);
 app.use("/uploads/api", uploadRoutes);
 
-// Serve static files from the uploads directory
-app.use("/uploads", express.static("uploads"));
+// Serve uploaded files from public/uploads
+app.use(
+    "/uploads",
+    express.static(path.join(__dirname, "public", "uploads"))
+);
 
-// Serve static files for Socket.io test client
-app.use(express.static("public"));
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, "public")));
 
 sequelize.authenticate()
     .then(async () => {

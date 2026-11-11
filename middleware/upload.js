@@ -7,8 +7,7 @@ const fs = require("fs");
 // Ensure a local upload folder exists (multer doesn't create dirs when destination is a function)
 
 const ensureLocalDir = (folder) => {
-    // Assumes upload.js is inside the project's middleware folder
-    const baseDir = path.resolve(__dirname, "../public/uploads");
+    const baseDir = path.join(__dirname, "../public/uploads");
     const dir = folder ? path.join(baseDir, folder) : baseDir;
 
     fs.mkdirSync(dir, { recursive: true });
