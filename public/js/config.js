@@ -1,5 +1,8 @@
 const APP_URL = window.location.origin;
 
-const appUrl = (path = '') => {
+function appUrl(path = '') {
     return `${APP_URL}/${path.replace(/^\/+/, '')}`;
-};
+}
+
+window.APP_URL = APP_URL;
+window.appUrl = appUrl;
