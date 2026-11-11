@@ -5,11 +5,17 @@ const path = require("path");
 const fs = require("fs");
 
 // Ensure a local upload folder exists (multer doesn't create dirs when destination is a function)
+
 const ensureLocalDir = (folder) => {
-    const dir = folder ? path.join("uploads", folder) : "uploads";
+    // Assumes upload.js is inside the project's middleware folder
+    const baseDir = path.resolve(__dirname, "../public/uploads");
+    const dir = folder ? path.join(baseDir, folder) : baseDir;
+
     fs.mkdirSync(dir, { recursive: true });
+
     return dir;
 };
+
 
 // Image-only filter (existing profile picture behavior)
 const imageFileFilter = (req, file, cb) => {
